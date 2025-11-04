@@ -6,4 +6,7 @@ protobuf==6.33.0
 pyppeteer==2.0.0
 python-dotenv==1.2.1
 gunicorn==23.0.0
-google-cloud-vision==3.7.4
+google-cloud-vision==3.10.2
+protobuf==4.25.3
+google-api-core==2.20.0
+google-auth==2.34.0
