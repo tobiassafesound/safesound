@@ -1,12 +1,16 @@
+# --- Core backend ---
 Flask==3.1.2
-flask_cors==6.0.1
-openai==2.7.1
-pdf2image==1.17.0
-protobuf==6.33.0
-pyppeteer==2.0.0
-python-dotenv==1.2.1
+Flask-Cors==6.0.1
 gunicorn==23.0.0
+python-dotenv==1.2.1
+
+# --- Google Cloud Vision ---
 google-cloud-vision==3.10.2
 protobuf==4.25.3
 google-api-core==2.20.0
 google-auth==2.34.0
+
+# --- PDF / Imagen / Utilidades ---
+pdf2image==1.17.0
+pyppeteer==2.0.0
+openai==2.7.1
