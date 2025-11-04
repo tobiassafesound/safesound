@@ -1,0 +1,177 @@
+---
+/**
+ * Safe&Sound — CompareTable (dinámico por campos)
+ * Renderiza una matriz de comparación sin homologación:
+ *  - Props:
+ *      cotizaciones: Array<{ aseguradora, plan?, tipo_seguro?, valores: Record<string,string>, prima_total?, vigencia? }>
+ *      campos: string[]   (orden ya decidido por el backend)
+ */
+
+ import type { Cotizacion } from "../types/compare";
+
+interface Props {
+  cotizaciones?: Cotizacion[];
+  campos?: string[];
+}
+
+const { cotizaciones = [], campos = [] } = Astro.props satisfies Props;
+
+// ---------- Helpers ----------
+function logoFromAseguradora(nombre: string) {
+  const base = (nombre || "")
+    .split(/\s+/)[0] // primera palabra
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // quitar acentos
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+  return `/logos/${base}.png`;
+}
+
+function getCampoValue(c: Cotizacion, campo: string) {
+  if (!c?.valores || typeof c.valores !== "object") return "—";
+  const valores = c.valores || {};
+  const match = Object.keys(valores).find(
+    k => k.trim().toLowerCase() === campo.trim().toLowerCase()
+  );
+  const raw = match ? valores[match] : "—";  if (raw == null || raw === "") return "—";
+
+  // Si llega como arreglo, lo unimos con viñetas ligeras
+  if (Array.isArray(raw)) {
+    const clean = (raw as unknown[]).map(v => String(v ?? "").trim()).filter(Boolean);
+    return clean.length ? clean.join(" • ") : "—";
+  }
+  return String(raw).trim() || "—";
+}
+
+// Pequeño formateador de título (opcional)
+function title(campo: string) {
+  return campo.replace(/\s+/g, " ").trim();
+}
+---
+
+{cotizaciones.length > 0 && campos.length > 0 && (
+<div class="relative rounded-2xl bg-gradient-to-br from-safesound-dark to-safesound-secondary p-[1px] shadow-xl overflow-visible print:overflow-visible">
+  <div class="rounded-2xl shadow-soft bg-white/5 backdrop-blur overflow-visible print:overflow-visible">
+    <table class="w-full border-separate border-spacing-0 compare-table-wrapper">
+        <thead>
+          <tr class="bg-safesound-secondary/90 text-white">
+            {/* Columna fija: nombre del campo */}
+            <th
+              scope="col"
+              class="left-0 z-10 w-[280px] px-4 py-4 text-left text-[0.8rem] md:text-sm font-semibold uppercase tracking-wide bg-safesound-secondary/90 print:relative print:static"
+            >
+              Característica
+            </th>
+
+            {/* Columnas por aseguradora */}
+            {cotizaciones.map((c, idx) => {
+              const logo = logoFromAseguradora(c.aseguradora || `opcion-${idx + 1}`);
+              const aseguradora = c.aseguradora || `Opción ${idx + 1}`;
+              return (
+                <th scope="col" class="px-4 py-4 text-center align-bottom">
+                  <div class="flex flex-col items-center gap-2">
+                    <img
+                      src={logo}
+                      alt={aseguradora}
+                      class="h-14 md:h-16 object-contain"
+                      loading="lazy"
+                      decoding="async"
+                      onerror="this.style.display='none'"
+                    />
+                    <span class="font-semibold text-white text-sm md:text-base leading-tight">
+                      {aseguradora}
+                    </span>
+                    {c.plan && (
+                      <span class="text-[11px] md:text-xs text-white/85 leading-tight">
+                        Plan: {c.plan}
+                      </span>
+                    )}
+                  </div>
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+
+        <tbody>
+          {/* Filas dinámicas desde `campos` */}
+          {campos.map((campo, i) => (
+            <tr class={i % 2 === 0 ? "bg-white/10" : "bg-white/5"}>
+              {/* Etiqueta fija a la izquierda (sticky) */}
+              <th
+                scope="row"
+                class="left-0 z-10 px-4 py-3 text-left text-[0.9rem] md:text-sm font-semibold text-white bg-safesound-primary/90 print:relative print:static"
+                title={title(campo)}
+              >
+                {title(campo)}
+              </th>
+
+              {/* Celdas por aseguradora */}
+              {cotizaciones.map((c) => {
+                const value = getCampoValue(c, campo);
+                return (
+                  <td class="px-4 py-3 text-sm md:text-[0.95rem] text-white/95">
+                    {value || "—"}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+
+          {/* Filas “opcionales” si vienen a nivel raíz (prima_total / vigencia) */}
+          {(cotizaciones.some(c => c.prima_total) || cotizaciones.some(c => c.vigencia)) && (
+            <>
+              {cotizaciones.some(c => c.prima_total) && (
+                <tr class="bg-white/10">
+                  <th
+                    scope="row"
+                    class="sticky left-0 z-10 px-4 py-3 text-left text-[0.9rem] md:text-sm font-semibold text-white bg-safesound-primary/90"
+                  >
+                    Prima total
+                  </th>
+                  {cotizaciones.map((c) => (
+                    <td class="px-4 py-3 text-sm md:text-[0.95rem] text-white/95">
+                      {c.prima_total?.trim() || "—"}
+                    </td>
+                  ))}
+                </tr>
+              )}
+
+              {cotizaciones.some(c => c.vigencia) && (
+                <tr class="bg-white/5">
+                  <th
+                    scope="row"
+                    class="sticky left-0 z-10 px-4 py-3 text-left text-[0.9rem] md:text-sm font-semibold text-white bg-safesound-primary/90"
+                  >
+                    Vigencia
+                  </th>
+                  {cotizaciones.map((c) => (
+                    <td class="px-4 py-3 text-sm md:text-[0.95rem] text-white/95">
+                      {c.vigencia?.trim() || "—"}
+                    </td>
+                  ))}
+                </tr>
+              )}
+            </>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    {/* Footer chips (opcionales) */}
+    <div class="flex flex-wrap items-center gap-2 px-3 py-3">
+      <span class="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-xs font-semibold text-white/95">
+        Cotizaciones: {cotizaciones.length}
+      </span>
+      <span class="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-xs font-semibold text-white/95">
+        Campos: {campos.length}
+      </span>
+    </div>
+  </div>
+)}
+
+{(cotizaciones.length === 0 || campos.length === 0) && (
+  <div class="w-full rounded-2xl border border-white/20 bg-white/5 px-6 py-10 text-center shadow-sm text-white/90">
+    <p>Sube 2 o 3 PDFs para generar el comparativo.</p>
+  </div>
+)}

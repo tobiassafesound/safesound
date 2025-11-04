@@ -1,0 +1,17 @@
+---
+import "../styles/safeandsound.css";
+import PresentationClient from "../components/PresentationClient.astro";
+// import PresentationClient from "../components/PresentationClient.jsx";
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Presentación — Safe & Sound</title>
+  </head>
+  <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#EEF5E8] to-[#E6EDF0]">
+    <!-- 👇 Este componente se renderiza en el cliente, accediendo al localStorage -->
+    <PresentationClient client />
+  </body>
+</html>

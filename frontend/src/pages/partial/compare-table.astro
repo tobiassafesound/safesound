@@ -1,0 +1,43 @@
+---
+/**
+ * partial/compare-table.astro
+ * Recibe el JSON enviado por compare.astro y pasa los props a CompareTable.astro
+ * Compatible con el nuevo formato { cotizaciones: [...], campos: [...] }
+ */
+
+ import CompareTableComponent from "../../components/CompareTable.astro";
+
+const formData = await Astro.request.formData();
+const raw = formData.get("resultados");
+console.log("📨 partial/compare-table → body recibido:", raw);
+
+let cotizaciones: any[] = [];
+let campos: string[] = [];
+
+if (raw && raw.trim() !== "") {
+  try {
+    const parsed = JSON.parse(raw);
+    console.log("📦 JSON parseado correctamente:", parsed);
+
+    // Detectar estructura del payload
+    if (Array.isArray(parsed.cotizaciones)) {
+      cotizaciones = parsed.cotizaciones;
+      campos = parsed.campos || [];
+    } else if (Array.isArray(parsed)) {
+      // Fallback (compatibilidad antigua)
+      cotizaciones = parsed;
+    } else if (Array.isArray(parsed.resultados)) {
+      cotizaciones = parsed.resultados;
+      campos = parsed.campos || [];
+    }
+
+    console.log(`🧩 Cotizaciones: ${cotizaciones.length}, Campos: ${campos.length}`);
+  } catch (err) {
+    console.error("❌ Error parseando JSON en partial:", err);
+  }
+} else {
+  console.warn("⚠️ partial/compare-table recibió body vacío.");
+}
+---
+
+<CompareTableComponent cotizaciones={cotizaciones} campos={campos} />

@@ -1,0 +1,7 @@
+---
+import SafePresentationComponent from "../../components/SafePresentation.astro";
+
+const formData = await Astro.request.formData();
+const cliente = String(formData.get("cliente") || "");
+---
+<SafePresentationComponent cliente={cliente} />

@@ -1,0 +1,21 @@
+---
+import CompareViewComponent from "../../components/CompareView.astro";
+
+const formData = await Astro.request.formData();
+let cotizaciones = [];
+let campos = [];
+let titulo = "Comparativo de Seguros";
+
+try {
+  const c = formData.get("cotizaciones");
+  const f = formData.get("campos");
+  const t = formData.get("titulo");
+
+  if (c) cotizaciones = JSON.parse(String(c));
+  if (f) campos = JSON.parse(String(f));
+  if (t) titulo = String(t);
+} catch (e) {
+  console.error("Error parseando payload de compare-view partial:", e);
+}
+---
+<CompareViewComponent cotizaciones={cotizaciones} campos={campos} titulo={titulo} />

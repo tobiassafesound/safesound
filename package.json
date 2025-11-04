@@ -1,0 +1,15 @@
+{
+  "name": "combinador",
+  "version": "1.0.0",
+  "description": "```\r Combinador\r ├─ .env\r ├─ backend\r │  ├─ comparativo_generado.pptx\r │  ├─ main.py\r │  ├─ requirements.txt\r │  ├─ templates\r │  │  └─ ppt\r │  │     └─ presentacion_ss.pptx\r │  └─ vision_key.json\r └─ frontend\r    ├─ .astro\r    │  ├─ settings.json\r    │  └─ types.d.ts\r    ├─ astro.config.mjs\r    ├─ package-lock.json\r    ├─ package.json\r    ├─ public\r    │  └─ logos\r    │     ├─ allianz.png\r    │     ├─ axa.png\r    │     ├─ bupa.png\r    │     ├─ chubb.png\r    │     ├─ continentalseguros.png\r    │     ├─ gnp.png\r    │     ├─ hdi.png\r    │     ├─ insignia.png\r    │     ├─ lalatino.png\r    │     ├─ mapfre.png\r    │     ├─ metlife.png\r    │     ├─ planseguro.png\r    │     ├─ prevem.png\r    │     ├─ primero.png\r    │     ├─ qualitas.png\r    │     ├─ segurosatlas.png\r    │     ├─ segurosbx.png\r    │     ├─ segurosmonterrey.png\r    │     ├─ skandia.png\r    │     ├─ sslogo.png\r    │     ├─ sslogo_white.png\r    │     └─ zurich.png\r    ├─ src\r    │  ├─ components\r    │  │  ├─ CompareCard.astro\r    │  │  └─ CompareTable.astro\r    │  ├─ env.d.ts\r    │  ├─ pages\r    │  │  ├─ compare.astro\r    │  │  └─ index.astro\r    │  └─ styles\r    │     └─ safeandsound.css\r    └─ tailwind.config.mjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^24.27.0"
+  }
+}

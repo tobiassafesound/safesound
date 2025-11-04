@@ -1,0 +1,15 @@
+# Dev environment
+pip
+autopep8
+
+# App
+flask
+python-dotenv
+openai
+pypdf2
+
+
+pytesseract
+pdf2image
+Pillow
+google-cloud-vision

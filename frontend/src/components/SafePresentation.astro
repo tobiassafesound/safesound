@@ -1,0 +1,68 @@
+---
+/**
+ * Safe & Sound — Portada comparativo ("Hoja 1")
+ * Corrige layout, centrado y estilo exacto.
+ */
+
+ interface Props { cliente?: string; }
+ const { cliente = "Nombre del Cliente" } = Astro.props;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Safe & Sound | Portada Comparativo</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="flex items-center justify-center min-h-screen font-[Figtree] bg-gradient-to-br from-[#EEF5E8] to-[#E6EDF0]"
+  >
+    <!-- Simulación de hoja A4 horizontal -->
+    <div
+      class="relative w-[1120px] h-[793px] bg-[#F8FBFA] rounded-3xl shadow-2xl overflow-hidden flex items-center justify-between px-20"
+    >
+      <!-- Izquierda -->
+      <div class="flex flex-col items-start justify-center w-1/2 space-y-3">
+        <img
+          src="/logos/sslogo.png"
+          alt="Safe & Sound"
+          class="w-[200px] h-auto object-contain"
+        />
+        <h3
+          class="text-lg text-[#004C3F]/80 uppercase font-medium tracking-widest"
+        >
+          Agente de Seguros
+        </h3>
+        <p class="text-sm italic text-[#004C3F]/70 mt-4 max-w-sm">
+          Protegiendo lo que más valoras, impulsando lo que más importa.
+        </p>
+      </div>
+
+      <!-- Derecha -->
+      <div class="flex flex-col items-end justify-center text-right w-1/2 space-y-2">
+        <span
+          class="text-sm uppercase text-[#004C3F]/70 font-medium tracking-wider"
+        >
+          Comparativo Personalizado
+        </span>
+        <h1
+        class="text-4xl font-bold text-[#004C3F] leading-tight max-w-[420px]"
+        >
+            {cliente.toUpperCase()}
+        </h1>
+
+        <!-- Badge esquina superior derecha -->
+        <div class="absolute top-6 right-6">
+          <span
+            class="inline-block bg-[#004C3F] text-white text-xs px-5 py-1.5 rounded-full font-semibold tracking-wide"
+          >
+            PROPUESTA
+          </span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

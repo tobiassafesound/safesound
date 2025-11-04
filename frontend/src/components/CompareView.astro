@@ -1,0 +1,73 @@
+---
+/**
+ * Safe & Sound — Hoja 2: Comparativo visual ("Coberturas / Comparativo de Seguros")
+ * Versión optimizada para PDF y vista fluida sin scroll.
+ *  - Elimina límites de altura.
+ *  - Permite que la tabla crezca verticalmente (overflow visible).
+ *  - Mantiene el diseño original y el footer consistente.
+ */
+
+ import CompareTable from "../components/CompareTable.astro";
+import type { Cotizacion } from "../types/compare";
+
+interface Props {
+  cotizaciones?: Cotizacion[];
+  campos?: string[];
+  titulo?: string;
+}
+
+const {
+  cotizaciones = [],
+  campos = [],
+  titulo = "Comparativo de Seguros",
+} = Astro.props;
+---
+
+<section
+  class="relative w-[1120px] mx-auto rounded-3xl font-[Figtree] shadow-2xl bg-gradient-to-b from-[#0B3E33] to-[#004C3F] text-white overflow-visible print:overflow-visible py-10"
+>
+  <!-- 🧭 Cabecera -->
+  <header class="flex items-center justify-between px-10 pt-4">
+    <div class="flex items-center gap-3">
+      <img
+        src="/logos/sslogo_white.png"
+        alt="Safe & Sound"
+        class="h-10 object-contain"
+        loading="lazy"
+      />
+      <span class="text-sm font-medium tracking-wider text-white/70">
+        Agente de Seguros
+      </span>
+    </div>
+
+    <span
+      class="border border-white/40 rounded-full px-6 py-1 text-xs font-semibold uppercase tracking-wide hover:bg-white/10 transition"
+    >
+      COBERTURAS
+    </span>
+  </header>
+
+  <!-- 🧱 Título -->
+  <div class="px-10 mt-10">
+    <h1 class="text-3xl font-bold leading-tight">{titulo}</h1>
+  </div>
+
+  <!-- 📊 Contenido (tabla comparativa sin límite de altura) -->
+  <div class="px-10 mt-8 bg-white/5 rounded-2xl backdrop-blur-sm py-6 overflow-visible print:overflow-visible">
+    {cotizaciones.length > 0 && campos.length > 0 ? (
+      <CompareTable cotizaciones={cotizaciones} campos={campos} />
+    ) : (
+      <p class="text-center text-white/70 text-sm py-10">
+        No hay datos disponibles para mostrar el comparativo.
+      </p>
+    )}
+  </div>
+
+  <!-- 📄 Footer -->
+  <footer
+    class="w-full px-10 py-5 flex justify-between items-center text-xs text-white/60 mt-10"
+  >
+    <span>Safe & Sound | Agente de Seguros</span>
+    <span>{new Date().getFullYear()}</span>
+  </footer>
+</section>
