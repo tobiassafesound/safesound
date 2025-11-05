@@ -9,7 +9,7 @@
         "start": "node ./dist/server/entry.mjs"
     },
     "dependencies": {
-        "@astrojs/node": "^8.3.3",
+        "@astrojs/node": "^9.5.0",
         "@astrojs/tailwind": "6.0.2",
         "astro": "^5.15.3",
         "flowbite": "3.1.2",
