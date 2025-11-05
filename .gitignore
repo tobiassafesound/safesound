@@ -1,3 +1,4 @@
 # Local Netlify folder
 .netlify
 backend/vision_key.json
+.env
