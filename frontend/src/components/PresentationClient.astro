@@ -44,15 +44,15 @@ let campos = [];
     // Renderizar cada partial
     const f1 = new FormData();
     f1.append("cliente", cliente);
-    const html1 = await postHTML("/partial/safe-presentation", f1);
+    const html1 = await postHTML(`${API_URL}/partial/safe-presentation`, f1);
 
     const f2 = new FormData();
     f2.append("cotizaciones", JSON.stringify(cotizaciones));
     f2.append("campos", JSON.stringify(campos));
     f2.append("titulo", "Comparativo de Seguros");
-    const html2 = await postHTML("/partial/compare-view", f2);
+    const html2 = await postHTML(`${API_URL}/partial/compare-view`, f2);
 
-    const html3 = await (await fetch("/partial/thankyou-view")).text();
+    const html3 = await (await fetch(`${API_URL}/partial/thankyou-view`)).text();
 
     // Ensamblar todo en una sola vista
     const fullHTML = `
@@ -78,6 +78,7 @@ let campos = [];
 
 <script>
     const btn = document.getElementById("download-pdf");
+    const API_URL = import.meta.env.PUBLIC_API_URL || "http://127.0.0.1:8080";
   
     btn?.addEventListener("click", async () => {
       // Estado: descargando
@@ -90,7 +91,7 @@ let campos = [];
         const raw = localStorage.getItem("comparativoData") || "{}";
         const { cliente = "cliente" } = JSON.parse(raw);
   
-        const res = await fetch("http://127.0.0.1:8080/generate-pdf", {
+        const res = await fetch(`${API_URL}/generate-pdf`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: raw,

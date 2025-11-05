@@ -193,6 +193,7 @@ class="fixed inset-0 hidden items-center justify-center bg-gradient-to-br from-[
   const status = document.getElementById("status");
   const progressContainer = document.getElementById("progress-container");
   const progressBar = document.getElementById("progress-bar");
+  const API_URL = import.meta.env.PUBLIC_API_URL || "http://127.0.0.1:8080";
 
   btn?.addEventListener("click", async () => {
     const files = input?.files;
@@ -222,7 +223,7 @@ class="fixed inset-0 hidden items-center justify-center bg-gradient-to-br from-[
 
     try {
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", "http://127.0.0.1:8080/compare", true);
+      xhr.open("POST", `${API_URL}/compare`, true);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
