@@ -16,6 +16,6 @@ export default defineConfig({
     },
   },
   server: {
-    port: process.env.PORT || 4321, // Render define su propio puerto
+    port: Number(process.env.PORT) || 4321, // ✅ aseguras tipo numérico
   },
 });
