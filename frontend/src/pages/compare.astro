@@ -193,8 +193,13 @@ class="fixed inset-0 hidden items-center justify-center bg-gradient-to-br from-[
   const status = document.getElementById("status");
   const progressContainer = document.getElementById("progress-container");
   const progressBar = document.getElementById("progress-bar");
-  const API_URL = import.meta.env.PUBLIC_API_URL || "http://127.0.0.1:8080";
-
+  const API_URL =
+  (typeof import.meta !== "undefined" &&
+   import.meta.env &&
+   import.meta.env.PUBLIC_API_URL)
+    ? import.meta.env.PUBLIC_API_URL
+    : "http://127.0.0.1:8080";
+    
   btn?.addEventListener("click", async () => {
     const files = input?.files;
     const cliente = document.getElementById("cliente").value.trim();
