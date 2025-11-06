@@ -5,7 +5,7 @@ import node from "@astrojs/node";
 export default defineConfig({
   output: "server",
   adapter: node({
-    mode: "standalone", // Render ejecuta como Node app única
+    mode: "standalone",
   }),
   integrations: [tailwind()],
   vite: {
@@ -16,6 +16,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: Number(process.env.PORT) || 4321, // ✅ aseguras tipo numérico
+    host: true, // ✅ obliga a escuchar en 0.0.0.0 (no solo localhost)
+    port: Number(process.env.PORT) || 4321, // ✅ puerto correcto
   },
 });
