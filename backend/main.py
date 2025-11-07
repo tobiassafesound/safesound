@@ -30,10 +30,14 @@ app.config["JSON_AS_ASCII"] = False
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # Máx 10MB
 
+# Detectar sistema operativo (Windows vs Render/Linux)
 if os.name == "nt":  # Windows local
     POPPLER_PATH = r"C:\Program Files\poppler-25.07.0\Library\bin"
-else:  # Linux (Render)
-    POPPLER_PATH = Noneclient_openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+else:  # Render (Linux)
+    POPPLER_PATH = None  # Usar el poppler integrado en el contenedor
+
+# Inicializar clientes externos
+client_openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 client_vision = vision.ImageAnnotatorClient()
 
 # ===============================================
