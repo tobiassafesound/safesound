@@ -38,6 +38,15 @@ else:  # Render (Linux)
 
 # Inicializar clientes externos
 client_openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Inicializar cliente de Google Vision (manejo de credenciales)
+if os.getenv("RENDER") == "true":  # Render define automáticamente esta variable
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "backend/vision_key.json"
+    print("✅ Cargando credenciales de Google Vision desde Secret File (Render)")
+else:
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "backend/vision_key.json"
+    print("✅ Cargando credenciales de Google Vision desde archivo local")
+
 client_vision = vision.ImageAnnotatorClient()
 
 # ===============================================
