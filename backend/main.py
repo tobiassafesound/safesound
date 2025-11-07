@@ -13,6 +13,8 @@ from pyppeteer import launch
 import tempfile
 import asyncio
 import subprocess
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 
@@ -326,16 +328,21 @@ def compare_pdfs():
     resumen = {"total": len(cotizaciones)}
 
     # 4️⃣ Estructura final
-    result = {
-        "mensaje": "Comparativo generado exitosamente",
-        "cliente": cliente,
-        "periodo_pago": periodo_pago,
-        "resumen": resumen,
-        "campos": campos_unicos,
-        "cotizaciones": cotizaciones
-    }
-
-    return jsonify(result), 200
+    try:
+        result = {
+            "mensaje": "Comparativo generado exitosamente",
+            "cliente": cliente,
+            "periodo_pago": periodo_pago,
+            "resumen": resumen,
+            "campos": campos_unicos,
+            "cotizaciones": cotizaciones
+        }
+        print("✅ Comparativo completado con éxito:", json.dumps(result, ensure_ascii=False)[:500])
+        return jsonify(result), 200
+    except Exception as e:
+        print("💥 Error al generar respuesta final:", e)
+        import traceback; traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/generate-pdf", methods=["POST"])
