@@ -28,8 +28,10 @@ app.config["JSON_AS_ASCII"] = False
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # Máx 10MB
 
-POPPLER_PATH = r"C:\Program Files\poppler-25.07.0\Library\bin"
-client_openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+if os.name == "nt":  # Windows local
+    POPPLER_PATH = r"C:\Program Files\poppler-25.07.0\Library\bin"
+else:  # Linux (Render)
+    POPPLER_PATH = Noneclient_openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 client_vision = vision.ImageAnnotatorClient()
 
 # ===============================================
@@ -41,8 +43,11 @@ def extract_text_from_pdf(file):
     text = ""
     try:
         file_bytes = file.read()
-        images = convert_from_bytes(file_bytes, dpi=200, poppler_path=POPPLER_PATH)
-
+        images = convert_from_bytes(
+            file_bytes,
+            dpi=200,
+            poppler_path=POPPLER_PATH if POPPLER_PATH else None
+        )
         for i, img in enumerate(images):
             print(f"🖼 Procesando página {i+1}/{len(images)}...")
             img_byte_arr = io.BytesIO()
