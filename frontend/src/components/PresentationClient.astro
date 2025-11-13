@@ -28,9 +28,9 @@ const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrend
 </button>
 
 <script type="module">
-  // ✅ Definir API_URL al inicio (accesible en todo el bloque)
-  const API_URL = "${API_URL}";
-  // 🔹 Función auxiliar para hacer POST y obtener HTML
+  // Backend fijo por ahora
+  const API_URL = "https://safesound-b8as.onrender.com";
+
   async function postHTML(url, formData) {
     const res = await fetch(url, { method: "POST", body: formData });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -79,7 +79,7 @@ const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrend
     console.error("❌ Error cargando presentación dinámica:", err);
   });
 
-  // 🔹 Script del botón de descarga (en el mismo bloque)
+  // 🔹 Botón de descarga (mismo API_URL)
   const btn = document.getElementById("download-pdf");
 
   btn?.addEventListener("click", async () => {
@@ -130,3 +130,4 @@ const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrend
     }
   });
 </script>
+
