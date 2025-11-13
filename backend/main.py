@@ -361,7 +361,7 @@ def compare_pdfs():
 @app.route("/generate-pdf", methods=["POST"])
 def generate_pdf():
     """Genera un solo PDF (una hoja completa, sin saltos) del comparativo renderizado en Astro."""
-    import subprocess, json, os
+    import subprocess, json, os, sys
 
     # 1️⃣ Recibir los datos desde el front
     raw_body = request.get_data(as_text=True) or "{}"
@@ -372,7 +372,8 @@ def generate_pdf():
     cliente = (parsed.get("cliente") or "SafeAndSound").strip()
 
     # 2️⃣ URL de la vista Astro
-    url_front = "http://localhost:4321/presentacion"
+    # En Render usa tu frontend público (no localhost)
+    url_front = os.getenv("FRONTEND_URL", "https://safesound-front.onrender.com/presentacion")
 
     # 3️⃣ Ruta de salida
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -384,23 +385,20 @@ def generate_pdf():
     # 4️⃣ Preparar el JSON como string JavaScript (para inyectar en localStorage)
     raw_json_for_js = raw_body.replace("\\", "\\\\").replace("`", "\\`")
 
-    # 5️⃣ Ejecutar Chrome headless con Puppeteer
-    command = [
-        "python",
-        "-c",
-        f"""
-import asyncio, sys
-from pyppeteer import launch
+    # 5️⃣ Detectar entorno (Windows vs Linux/Render)
+    is_windows = os.name == "nt"
 
-sys.stdout.reconfigure(encoding='utf-8')
-CHROME_PATH = "C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe"
+    # 6️⃣ Script de generación con Pyppeteer
+    py_code = f"""
+import asyncio, json
+from pyppeteer import launch
 
 RAW = r\"\"\"{raw_json_for_js}\"\"\"  # datos de localStorage
 
 async def main():
     browser = await launch(
         headless=True,
-        executablePath=CHROME_PATH,
+        executablePath={"r'C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe'" if is_windows else "None"},
         args=[
             "--no-sandbox",
             "--disable-setuid-sandbox",
@@ -421,15 +419,15 @@ async def main():
         }}\"\"\"
     )
 
-    # Ir a la página y esperar al marcador
+    # Navegar al frontend y esperar al marcador
     await page.goto("{url_front}", {{ "waitUntil": "networkidle0", "timeout": 120000 }})
     await page.waitForSelector("#pdf-ready", {{ "timeout": 120000 }})
 
-    # Medir altura total del contenido
+    # Medir altura total
     total_height = await page.evaluate("document.body.scrollHeight")
     print(f"📏 Altura total detectada: {{total_height}}px")
 
-    # Generar PDF de una sola hoja
+    # Generar PDF
     pdf_bytes = await page.pdf({{
         "printBackground": True,
         "width": "1120px",
@@ -441,11 +439,11 @@ async def main():
         f.write(pdf_bytes)
     await browser.close()
 
-asyncio.get_event_loop().run_until_complete(main())
+# 🔧 Compatible con Python 3.13 / asyncio
+asyncio.run(main())
 """
-    ]
 
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run([sys.executable, "-c", py_code], capture_output=True, text=True)
     if result.returncode != 0:
         print("❌ Subproceso falló:", result.stderr or result.stdout)
         return jsonify({"error": "No se pudo generar el PDF"}), 500
