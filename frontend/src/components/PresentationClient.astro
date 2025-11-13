@@ -28,16 +28,18 @@ const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrend
 </button>
 
 <script type="module">
-  // Backend fijo por ahora
-  const API_URL = "https://safesound-b8as.onrender.com";
+  // 🔧 Backend Flask (Render)
+  const BACKEND_URL = "https://safesound-b8as.onrender.com";
 
-  async function postHTML(url, formData) {
-    const res = await fetch(url, { method: "POST", body: formData });
+  // 🔧 Los partials viven en el frontend (mismo dominio que /presentacion)
+  // Usamos rutas relativas: /partial/...
+  async function postHTML(path, formData) {
+    const res = await fetch(path, { method: "POST", body: formData });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return res.text();
   }
 
-  // 🔹 Render dinámico de presentación
+  // 🔹 Render dinámico de la presentación
   (async () => {
     const raw = localStorage.getItem("comparativoData");
     if (!raw) {
@@ -50,15 +52,15 @@ const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrend
 
     const f1 = new FormData();
     f1.append("cliente", cliente);
-    const html1 = await postHTML(`${API_URL}/partial/safe-presentation`, f1);
+    const html1 = await postHTML("/partial/safe-presentation", f1);
 
     const f2 = new FormData();
     f2.append("cotizaciones", JSON.stringify(cotizaciones));
     f2.append("campos", JSON.stringify(campos));
     f2.append("titulo", "Comparativo de Seguros");
-    const html2 = await postHTML(`${API_URL}/partial/compare-view`, f2);
+    const html2 = await postHTML("/partial/compare-view", f2);
 
-    const html3 = await (await fetch(`${API_URL}/partial/thankyou-view`)).text();
+    const html3 = await (await fetch("/partial/thankyou-view")).text();
 
     const fullHTML = `
       <div class="flex flex-col items-center">
@@ -79,7 +81,7 @@ const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrend
     console.error("❌ Error cargando presentación dinámica:", err);
   });
 
-  // 🔹 Botón de descarga (mismo API_URL)
+  // 🔹 Botón de descarga: aquí sí vamos contra el BACKEND
   const btn = document.getElementById("download-pdf");
 
   btn?.addEventListener("click", async () => {
@@ -92,7 +94,7 @@ const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrend
       const raw = localStorage.getItem("comparativoData") || "{}";
       const { cliente = "cliente" } = JSON.parse(raw);
 
-      const res = await fetch(`${API_URL}/generate-pdf`, {
+      const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: raw,
@@ -130,4 +132,5 @@ const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrend
     }
   });
 </script>
+
 
