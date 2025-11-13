@@ -24,6 +24,14 @@ let campos = [];
   📄 Descargar PDF
 </button>
 
+<!-- ✅ Variable global API_URL definida primero -->
+<script>
+  // Define la URL del backend antes de cualquier script que la use
+  // @ts-ignore
+  const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrender.com";
+</script>
+
+<!-- 🔹 Script principal para render dinámico -->
 <script type="module">
   async function postHTML(url, formData) {
     const res = await fetch(url, { method: "POST", body: formData });
@@ -41,7 +49,7 @@ let campos = [];
     const data = JSON.parse(raw);
     const { cliente = "", cotizaciones = [], campos = [] } = data;
 
-    // Renderizar cada partial
+    // Renderizar cada partial del backend
     const f1 = new FormData();
     f1.append("cliente", cliente);
     const html1 = await postHTML(`${API_URL}/partial/safe-presentation`, f1);
@@ -56,11 +64,11 @@ let campos = [];
 
     // Ensamblar todo en una sola vista
     const fullHTML = `
-    <div class="flex flex-col items-center">
-        <div class="mb-[80px]">${html1}</div>
-        <div class="my-[100px]">${html2}</div>
-        <div class="mt-[120px]">${html3}</div>
-    </div>
+      <div class="flex flex-col items-center">
+          <div class="mb-[80px]">${html1}</div>
+          <div class="my-[100px]">${html2}</div>
+          <div class="mt-[120px]">${html3}</div>
+      </div>
     `;
 
     document.getElementById("presentation-content").innerHTML = fullHTML;
@@ -76,59 +84,55 @@ let campos = [];
   });
 </script>
 
+<!-- 🔹 Script del botón de descarga -->
 <script>
-    const btn = document.getElementById("download-pdf");
-    const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrender.com";
-  
-    btn?.addEventListener("click", async () => {
-      // Estado: descargando
-      btn.disabled = true;
-      const originalText = btn.innerHTML;
-      btn.innerHTML = "⏳ Generando PDF...";
-      btn.classList.add("opacity-80", "cursor-wait");
-  
-      try {
-        const raw = localStorage.getItem("comparativoData") || "{}";
-        const { cliente = "cliente" } = JSON.parse(raw);
-  
-        const res = await fetch(`${API_URL}/generate-pdf`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: raw,
-        });
-  
-        if (!res.ok) throw new Error("Error en generación de PDF");
-  
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `comparativo_${cliente}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-  
-        // Estado: éxito
-        btn.innerHTML = "✅ PDF listo";
-        btn.classList.remove("cursor-wait");
-        btn.classList.add("bg-green-600");
-  
-        // Volver al estado original después de unos segundos
-        setTimeout(() => {
-          btn.innerHTML = originalText;
-          btn.classList.remove("bg-green-600", "opacity-80");
-          btn.disabled = false;
-        }, 2500);
-      } catch (err) {
-        console.error(err);
-        btn.innerHTML = "❌ Error al generar";
-        btn.classList.add("bg-red-600");
-  
-        setTimeout(() => {
-          btn.innerHTML = originalText;
-          btn.classList.remove("bg-red-600", "opacity-80");
-          btn.disabled = false;
-        }, 2500);
-      }
-    });
-  </script>
-  
+  const btn = document.getElementById("download-pdf");
+
+  btn?.addEventListener("click", async () => {
+    btn.disabled = true;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "⏳ Generando PDF...";
+    btn.classList.add("opacity-80", "cursor-wait");
+
+    try {
+      const raw = localStorage.getItem("comparativoData") || "{}";
+      const { cliente = "cliente" } = JSON.parse(raw);
+
+      const res = await fetch(`${API_URL}/generate-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: raw,
+      });
+
+      if (!res.ok) throw new Error("Error en generación de PDF");
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `comparativo_${cliente}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      btn.innerHTML = "✅ PDF listo";
+      btn.classList.remove("cursor-wait");
+      btn.classList.add("bg-green-600");
+
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.remove("bg-green-600", "opacity-80");
+        btn.disabled = false;
+      }, 2500);
+    } catch (err) {
+      console.error(err);
+      btn.innerHTML = "❌ Error al generar";
+      btn.classList.add("bg-red-600");
+
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.remove("bg-red-600", "opacity-80");
+        btn.disabled = false;
+      }, 2500);
+    }
+  });
+</script>
