@@ -6,6 +6,9 @@ import ThankYouView from "./ThankYouView.astro";
 let cliente = "";
 let cotizaciones = [];
 let campos = [];
+
+const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrender.com";
+
 ---
 
 <main class="print-page flex flex-col items-center bg-[#E6EDF0]">
@@ -26,8 +29,7 @@ let campos = [];
 
 <script type="module">
   // ✅ Definir API_URL al inicio (accesible en todo el bloque)
-  const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrender.com";
-
+  const API_URL = "${API_URL}";
   // 🔹 Función auxiliar para hacer POST y obtener HTML
   async function postHTML(url, formData) {
     const res = await fetch(url, { method: "POST", body: formData });
