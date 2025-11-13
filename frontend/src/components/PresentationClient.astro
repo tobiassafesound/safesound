@@ -24,21 +24,18 @@ let campos = [];
   📄 Descargar PDF
 </button>
 
-<!-- ✅ Variable global API_URL definida primero -->
-<script>
-  // Define la URL del backend antes de cualquier script que la use
-  // @ts-ignore
-  const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrender.com";
-</script>
-
-<!-- 🔹 Script principal para render dinámico -->
 <script type="module">
+  // ✅ Definir API_URL al inicio (accesible en todo el bloque)
+  const API_URL = import.meta.env.PUBLIC_API_URL || "https://safesound-b8as.onrender.com";
+
+  // 🔹 Función auxiliar para hacer POST y obtener HTML
   async function postHTML(url, formData) {
     const res = await fetch(url, { method: "POST", body: formData });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return res.text();
   }
 
+  // 🔹 Render dinámico de presentación
   (async () => {
     const raw = localStorage.getItem("comparativoData");
     if (!raw) {
@@ -49,7 +46,6 @@ let campos = [];
     const data = JSON.parse(raw);
     const { cliente = "", cotizaciones = [], campos = [] } = data;
 
-    // Renderizar cada partial del backend
     const f1 = new FormData();
     f1.append("cliente", cliente);
     const html1 = await postHTML(`${API_URL}/partial/safe-presentation`, f1);
@@ -62,7 +58,6 @@ let campos = [];
 
     const html3 = await (await fetch(`${API_URL}/partial/thankyou-view`)).text();
 
-    // Ensamblar todo en una sola vista
     const fullHTML = `
       <div class="flex flex-col items-center">
           <div class="mb-[80px]">${html1}</div>
@@ -73,7 +68,6 @@ let campos = [];
 
     document.getElementById("presentation-content").innerHTML = fullHTML;
 
-    // 🔖 Marcador para Puppeteer (PDF listo)
     const marker = document.createElement("div");
     marker.id = "pdf-ready";
     marker.style.display = "none";
@@ -82,10 +76,8 @@ let campos = [];
   })().catch(err => {
     console.error("❌ Error cargando presentación dinámica:", err);
   });
-</script>
 
-<!-- 🔹 Script del botón de descarga -->
-<script>
+  // 🔹 Script del botón de descarga (en el mismo bloque)
   const btn = document.getElementById("download-pdf");
 
   btn?.addEventListener("click", async () => {
